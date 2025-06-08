@@ -1,0 +1,11 @@
+Menu da calculado, digite uma das opções:
+1 - Inserir matriz
+2 - Interface de calculos
+3 - Carregar matriz de um arquivo
+4 - Salvar matriz
+5 - Remover matriz da mamória
+6 - Listar matriz da mamória
+7 - Salvar lista completa de matrizes
+8 - Carregar lista de matrizes
+9 - Zerar lista
+0 - Sair da calculadora

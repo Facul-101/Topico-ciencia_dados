@@ -1,0 +1,7 @@
+Sua matrix se enquadra em desses tipos:
+1 - Quadrada
+2 - Triangular Superior
+3 - Triangular Inferior
+4 - Diagonal
+5 - Gerar matriz identidade
+6 - Nenhum desses
