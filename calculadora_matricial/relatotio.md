@@ -1,5 +1,8 @@
 # Relatório de Desenvolvimento — Calculadora Matricial
 
+Nome: Bruno Videira Pinho
+DRE: 119.161.539
+
 ## Estruturas de Dados Utilizadas
 
 O projeto utiliza principalmente a estrutura listas de listas de floats (`list[list[float]]`) e lista de float (`list[float]`) para representar matrizes num geral. Para matrizes triangulares e diagonais, são usadas listas de listas de tamanhos variáveis e listas simples, respectivamente, otimizando o uso de memória ao armazenar apenas os elementos necessários (como, apenas a diagonal principal para matrizes diagonais).
