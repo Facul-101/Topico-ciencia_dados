@@ -82,8 +82,6 @@ class MainFrame:
 
     def calc(self):
         
-        self.show_loaded_names()
-        feed_back = ''
         
         while True:
             for t in self.header:
@@ -97,7 +95,6 @@ class MainFrame:
             print("Definição de objeto é feita por uma sequência de listas (salve objetos e olhe como ele são salvos)")
             print("Chamar uma matriz diretamete ('{nome}') faz com que seu valor apareça na tela")
             print("'_' para voltar ao menu")
-            print(feed_back)
             option = input("==> ").strip().replace(' ', '')
 
             if option == '_':
@@ -112,6 +109,7 @@ class MainFrame:
                 operation = option
 
             result: Optional[STDMatrix] = None
+            status: Optional[Exception] = None
             for operator in ['+', '-', '*']:
                 if operator in operation:
                     obj1, obj2 = operation.split(operator)
@@ -124,17 +122,17 @@ class MainFrame:
 
                     try:
                         result = eval(f'{obj1}{operator}{obj2}')
-                    except ValueError as e:
-                        print(e)
+                    except Exception as e:
+                        status = e
                     break
             else:
-                result = self.try_parse_to_mtx(operation)
-
-            if operation in self.mtx_list:
-                result = self.mtx_list[operation]
+                if operation in self.mtx_list:
+                    result = self.mtx_list[operation]
+                else:
+                    result, status = self.try_parse_to_mtx(operation)
 
             if result is None:
-                print("Falha a operação")
+                print(f"ERRO: {status}" if status is not None else 'Falha na operação')
             elif name is None:
                 result.show()
             else:
@@ -142,7 +140,7 @@ class MainFrame:
             
             input('Aperte enter para continuar...')
             self.cycle()
-            self.show_loaded_names()
+            self.loaded_names()
 
     def load_mtx(self):
         mtx_folder = self.DIR + "/mtx"
@@ -160,7 +158,7 @@ class MainFrame:
         self.mtx_loaded(file)
 
     def save_mtx(self):
-        self.show_loaded_names()
+        self.loaded_names()
         name = self.str_dialog(text='Qual matrix gostaria de salvar?', inputs=list(self.mtx_list.keys()))
         if name is None:
             return
@@ -169,7 +167,7 @@ class MainFrame:
             file.write(f"{type(self.mtx_list[name]).__name__} - {self.mtx_list[name].data}")
 
     def remove_mtx(self):
-        self.show_loaded_names()
+        self.loaded_names()
         name = self.str_dialog(text='Qual matrix gostaria de excluir da memória?', inputs=list(self.mtx_list.keys()))
 
         if name is None:
@@ -187,7 +185,7 @@ class MainFrame:
         input('Aperte enter para voltar...')
 
     def save_all(self):
-        self.show_loaded_names()
+        self.loaded_names()
         name = self.str_dialog(text='Qual nome gostaria de dar a essa lista?')
         if name is None:
             return
@@ -237,7 +235,7 @@ class MainFrame:
 
                 
         
-        self.show_loaded_names()
+        self.loaded_names()
         name = self.str_dialog(file_name="mtx_name")
         if name is None:
             return
@@ -258,7 +256,7 @@ class MainFrame:
             for c in range(n_lines - l):
                 data[l][c] = self.float_dialog(text=f'Insira o valor da coordenada {l}x{c}')
         
-        self.show_loaded_names()
+        self.loaded_names()
         name = self.str_dialog(file_name="mtx_name")
         if name is None:
             return
@@ -280,7 +278,7 @@ class MainFrame:
             for c in range(l + 1):
                 data[l][c] = self.float_dialog(text=f'Insira o valor da coordenada {l}x{c}')
         
-        self.show_loaded_names()
+        self.loaded_names()
         name = self.str_dialog(file_name="mtx_name")
         if name is None:
             return
@@ -301,7 +299,7 @@ class MainFrame:
         for l in range(n_lines):
             data[l] = self.float_dialog(text=f'Insira o valor da coordenada {l}x{l}')
 
-        self.show_loaded_names()
+        self.loaded_names()
         name = self.str_dialog(file_name="mtx_name")
         if name is None:
             return
@@ -327,7 +325,7 @@ class MainFrame:
             for c in range(n_columns):
                 data[l][c] = self.float_dialog(text=f'Insira o valor da coordenada {l}x{c}')
         
-        self.show_loaded_names()
+        self.loaded_names()
         name = self.str_dialog(file_name="mtx_name")
         if name is None:
             return
@@ -346,7 +344,7 @@ class MainFrame:
 
         data = [1.0 for _ in range(n_lines)]
         
-        self.show_loaded_names()
+        self.loaded_names()
         name = self.str_dialog(file_name="mtx_name")
         if name is None:
             return
@@ -366,13 +364,19 @@ class MainFrame:
     def mtx_loaded(self, name: str):
         self.header.append(f'Matriz {name} armazenada com sucesso')
 
-    def show_loaded_names(self):
+    def loaded_names(self, inplace=True):
 
         text = '['
         for key, value in self.mtx_list.items():
             text = ''.join([text, f"{key}: {type(value).__name__}{value.get_std_shape()} | "])
         text = ''.join([text, ']'])
-        self.header[1] = (''.join(['Matrizes em memória: ', text]))
+
+        names = ''.join(['Matrizes em memória: ', text])
+
+        if inplace:
+            self.header[1] = names
+
+        return names
 
     # endregion
 
@@ -387,20 +391,21 @@ class MainFrame:
     def cycle(self):
         os.system('cls' if os.name == 'nt' else 'clear')
         self.header[0] = self.get_h0()
+        self.header[1] = self.loaded_names(False)
 
-    def try_parse_to_mtx(self, operation: str) -> Optional[STDMatrix]:
+    def try_parse_to_mtx(self, operation: str) -> tuple[Optional[STDMatrix], Optional[Exception]]:
         result: Optional[STDMatrix] = None
 
         if not (operation.startswith('[')):
-            return
+            return None, ValueError("Matriz não se inicia com '['")
         
         if not (operation.endswith(']')):
-            return
+            return None, ValueError("Matriz não finaliza com ']'")
         
         try:
             outer_list = list(operation[1:-1].split(','))
-        except Exception:
-            return
+        except Exception as e:
+            return None, e
 
         try:
             result = DIGMatrix([float(i) for i in outer_list])
@@ -408,13 +413,13 @@ class MainFrame:
             pass
 
         if result is not None:
-            return result
+            return result, None
         
         try:
             outer_list = list(operation[2:-2].split('],['))
             full_data = [[float(i) for i in list(line.split(','))] for line in outer_list]
-        except Exception:
-            return
+        except Exception as e:
+            return None, e
         
         try:
             result = DWTMatrix(full_data)
@@ -422,7 +427,7 @@ class MainFrame:
             pass
 
         if result is not None:
-            return result
+            return result, None
         
         try:
             result = UPTMatrix(full_data)
@@ -430,7 +435,7 @@ class MainFrame:
             pass
 
         if result is not None:
-            return result
+            return result, None
         
         try:
             result = SQMatrix(full_data)
@@ -438,14 +443,14 @@ class MainFrame:
             pass
 
         if result is not None:
-            return result
+            return result, None
         
         try:
             result = STDMatrix(full_data)
         except (ValueError, TypeError):
             pass
 
-        return result
+        return result, None
 
     # endregion
 

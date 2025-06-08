@@ -10,7 +10,17 @@ class STDMatrix:
         self._shape = (len(self.data), len(self.data[0])) # Linnha, coluna
     
     def show(self):
-        print(self.data)
+        print("Dado cru: ", self.data)
+
+        print("Matriz resultado:")
+        data = self.data
+        try:
+            data = self.fill_lines() # type: ignore
+        except Exception:
+            pass
+
+        for row in data:
+            print(" ".join(f"{val:8.2f}" for val in row))
 
     def get_std_shape(self) -> tuple[int, int]:
         return self._shape
