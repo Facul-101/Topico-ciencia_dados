@@ -21,7 +21,7 @@ O projeto utiliza principalmente a estrutura listas de listas de floats (`list[l
 - **tests.py**: Contém testes unitários para todas as classes e operações.
 - **main.py**: Arquivo principal para execução da interface.
 
-## Descrição das Rotinas e Funções
+## Descrição das Rotinas e Métodos
 
 - **Construtores**: Validam e armazenam os dados das matrizes conforme o tipo.
 - **Operadores Sobrecaregados**: `__add__`, `__sub__`, `__mul__`, etc., permitem operações naturais entre matrizes e escalares.

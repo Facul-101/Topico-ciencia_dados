@@ -15,7 +15,7 @@ O projeto utiliza a estrutura de dados pilha (stack), implementada na classe `Pi
 - **torre_hanoi.py**: Implementa a solução do problema da Torre de Hanoi utilizando três instâncias da classe `Pilha` para representar os pinos. Inclui métodos para resolver o problema, mostrar o estado atual e contar movimentos.
 - **relatorio.md**: Este relatório.
 
-## Principais Rotinas e Funções
+## Principais Rotinas e Métodos
 
 - **Pilha**
   - `empilha(data)`: Adiciona um elemento ao topo da pilha.
